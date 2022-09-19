@@ -1,54 +1,61 @@
 package com.example.demo;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.ResponseEntity;
 
-import com.example.demo.controller.MainController;
+import com.example.demo.entity.User;
 
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.hamcrest.Matchers.containsString;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
+@DisplayName("WEB-TEST")
 public class AuthenticationWebTests {
 
 
 
     @LocalServerPort
-    private int port;
-
-
+    private int randomPort;
+     
     @Autowired
-    private MainController controller;
-
-
-
-
-    @Autowired
-    private MockMvc mockMvc;
-
+    private TestRestTemplate template;
 
     @Test
-    public void shouldReturnDefaultMessage() throws Exception {
-        this.mockMvc.perform(get("/")).andDo(print()).andExpect(status().isOk());
-    }
-
-    @Test
-    public void checkLoginPage() throws Exception {
-        this.mockMvc.perform(get("/login")).andDo(print()).andExpect(status().is4xxClientError());
+    @DisplayName("('/')SERVER-RUNNING-TEST")
+    void testForRunningServer1() {
+    	String url ="http://localhost:"+randomPort+"/";
+        ResponseEntity<String> response = template.getForEntity(url, String.class);
+        assertEquals(200, response.getStatusCodeValue());
     }
     
     @Test
-    public void checkUsersPage() throws Exception {
-        this.mockMvc.perform(get("/allusers")).andDo(print()).andExpect(status().isOk());
+    @DisplayName("(list-users)SERVER-RUNNING-TEST")
+    void testForRunningServer2() {
+    	String url ="http://localhost:"+randomPort+"/users";
+        ResponseEntity<String> response = template.getForEntity(url, String.class);
+        assertEquals(200, response.getStatusCodeValue());
     }
+    
+//    @Test
+//    @DisplayName("(/login)SERVER-RUNNING-TEST")
+//    void testForRunningServer3() {
+//    	String url ="http://localhost:"+randomPort+"/users";
+//    	User user = new User("DemoTest", "test@gmail.com", "12345");
+//    	HttpEntity<User> requestObj = new HttpEntity<>(user);
+//        ResponseEntity<User> response = template.postForEntity(url,requestObj, User.class);
+//        
+//        assertEquals(200, response.getStatusCodeValue());
+//        assertNotNull(response.getBody());
+//        assertEquals("DemoTest", response.getBody().getName());
+//    }
+    
 }
+    
+    
